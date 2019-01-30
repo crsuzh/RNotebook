@@ -5,26 +5,26 @@ date: "30 Jan 2019"
 output: html_notebook
 ---
 
-# Install required libraries (only once)
+# 1. Install required libraries (only once)
 ```{r}
 # install.packages("carData")
 # install.packages("biostatUZH", repos="http://R-Forge.R-project.org")
 ```
 
-# Load required libraries
+# 2. Load required libraries
 ```{r}
 library(biostatUZH)
 library(ggplot2)
 ```
 
-# Load data
+# 3. Load data
 ```{r}
 data = carData::TitanicSurvival
 ```
 
-# Figure
+# 4. Figure
 Example figure with distribution of age per class.
-```{r fig.height=3, fig.width=3, warning=FALSE}
+```{r, fig.height=2, fig.width=2, warning=FALSE}
 ggplot(data, aes(x=passengerClass, y=age, color=passengerClass)) + 
   geom_boxplot(width=0.8) +
   geom_point(shape=1, color="gray70", size=1, position = position_jitter(width = 0.3, height = 0.01)) +
@@ -36,10 +36,8 @@ ggplot(data, aes(x=passengerClass, y=age, color=passengerClass)) +
 ```{r}
 data$survived = relevel(data$survived, ref = "yes") # relevel: baseline is survived: yes
 
-fit = glm(survived ~ sex + age + passengerClass,
+fit = glm(survived ~ sex + passengerClass + age,
           data = data, family = binomial())
-
-summary(fit)
 ```
 
 # Create table for publication
@@ -49,4 +47,4 @@ tableOR(fit, latex = FALSE, short = T, refLevels = labels, rmStat=TRUE,
         caption = "Changes in odds for risk of death in the Titanic tragedy.")
 ```
 
-Male passengers have a 12-fold increase in the odds to die compared to female. Passengers from 3rd class have a almost 10-times increase in odds to die, and passengers from 2nd class have a 3.6-times increase in odds compatred to 1st class.
+Male passengers had a 12-fold increase in the odds to die compared to female. Passengers from 3rd class have a almost 10-times increase in odds to die, and passengers from 2nd class have a 3.6-times increase in odds compatred to 1st class.
