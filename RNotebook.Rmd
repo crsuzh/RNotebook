@@ -1,13 +1,14 @@
 ---
 title: "R Notebook Example"
 author: "Simon Schwab & Eva Furrer"
-date: "14 Jan 2019"
+date: "30 Jan 2019"
 output: html_notebook
 ---
 
 # Install required libraries (only once)
 ```{r}
-# install.packages("biostatUZH")
+# install.packages("carData")
+# install.packages("biostatUZH", repos="http://R-Forge.R-project.org")
 ```
 
 # Load required libraries
@@ -16,30 +17,36 @@ library(biostatUZH)
 library(ggplot2)
 ```
 
-# Load & prepare data
+# Load data
 ```{r}
-dat = carData::TitanicSurvival
-dat$survived = relevel(dat$survived, ref = "yes") # relevel: baseline is survived: yes
+data = carData::TitanicSurvival
 ```
 
-# Figure with some descriptives
-```{r}
-ggplot(dat, aes(x=passengerClass, y=age, color=passengerClass)) +   geom_boxplot(width=0.8) +
-  geom_point(shape=1, color="gray70", size=1, position = position_jitter(width = 0.3, height = 0.01))
+# Figure
+Example figure with distribution of age per class.
+```{r fig.height=3, fig.width=3, warning=FALSE}
+ggplot(data, aes(x=passengerClass, y=age, color=passengerClass)) + 
+  geom_boxplot(width=0.8) +
+  geom_point(shape=1, color="gray70", size=1, position = position_jitter(width = 0.3, height = 0.01)) +
+  ylab("Age") + xlab("Passenger Class") + theme_minimal() + theme(legend.position="none") 
 ```
 
 
 # Model binary outcome survived yes/no
 ```{r}
+data$survived = relevel(data$survived, ref = "yes") # relevel: baseline is survived: yes
+
 fit = glm(survived ~ sex + age + passengerClass,
-          data = dat, family = binomial())
+          data = data, family = binomial())
+
 summary(fit)
 ```
 
 # Create table for publication
 ```{r}
 labels = c("female", "1st") # reference levels of the two categorial variables
-tableOR(fit, latex = FALSE, short = TRUE, refLevels = labels, caption = "Changes in odds for risk of death in the Titanic tragedy.")
+tableOR(fit, latex = FALSE, short = T, refLevels = labels, rmStat=TRUE,
+        caption = "Changes in odds for risk of death in the Titanic tragedy.")
 ```
 
-Male passengers have a 12-fold increase in odds to die compared to female. Passengers from 3rd class have a almost 10-times increase in odds to die, and passengers from 2nd class have a 3.6-times increase in odds compatred to 1st class.
+Male passengers have a 12-fold increase in the odds to die compared to female. Passengers from 3rd class have a almost 10-times increase in odds to die, and passengers from 2nd class have a 3.6-times increase in odds compatred to 1st class.
