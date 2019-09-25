@@ -13,9 +13,10 @@ output: html_notebook
 ```
 
 # 2. Load required libraries
-```{r}
+```{r message=FALSE}
 library(biostatUZH)
 library(ggplot2)
+library(lme4)
 ```
 
 # 3. Load data
@@ -25,7 +26,7 @@ data <- carData::TitanicSurvival
 
 # 4. Figure
 Example figure with distribution of age per class.
-```{r, fig.height=2, fig.width=2, warning=FALSE}
+```{r, fig.height=3, fig.width=3, warning=FALSE}
 ggplot(data, aes(x=passengerClass, y=age, color=passengerClass)) + 
   geom_boxplot(width=0.8) +
   geom_point(shape=1, color="gray70", size=1, position=position_jitter(width=0.3, height=0.01)) +
@@ -39,7 +40,9 @@ data$survived <- relevel(data$survived, ref="yes") # relevel: baseline is surviv
 
 fit <- glm(survived ~ sex + passengerClass + age,
           data=data, family=binomial())
+summary(fit)
 ```
+
 
 # Create table for publication
 ```{r}
@@ -48,4 +51,4 @@ tableOR(fit, latex=FALSE, short=T, refLevels=labels, rmStat=TRUE,
         caption="Changes in odds for risk of death in the Titanic tragedy.")
 ```
 
-Male passengers had a 12-fold increase in the odds to die compared to female. Passengers from 3rd class have a almost 10-times increase in odds to die, and passengers from 2nd class have a 3.6-times increase in odds compatred to 1st class.
+Male passengers had a 12-fold higher chance to die compared to female. Passengers from 3rd class have a almost 10-times higher chance to die, and passengers from 2nd class have a 3.6-times higher chance compared to 1st class passengers.
